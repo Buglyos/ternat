@@ -1,0 +1,21 @@
+{
+  "maven.terminal.customEnv": [
+    {
+      "environmentVariable": "PORT",
+      "value": "8000"
+    },
+    {
+      "environmentVariable": "JWT_SECRET",
+      "value": "superTitkosKulcS1234567890hosszuLegyen"
+    },
+    {
+      "environmentVariable": "DB_DIALECT",
+      "value": "sqlite"
+    },
+    {
+      "environmentVariable": "DB_STORAGE",
+      "value": "../database.sqlite"
+    }
+  ],
+  "liveServer.settings.port": 5501
+}

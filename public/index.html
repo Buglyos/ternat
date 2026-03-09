@@ -1,0 +1,149 @@
+/*
+* File: index.html
+* Author: Buglyos Attila
+* Copyright: 2026, Buglyos Attila
+* Group: Szoft II/E
+* Date: 2026.03.09
+* Github: https://github.com/Buglyos/
+* Licenc: MIT
+*/
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Szuper Csapatkezelő</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .admin-panel { background: white; padding: 20px; border-radius: 12px; max-width: 800px; margin: 0 auto 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 320px; border-top: 5px solid #3498db; position: relative; }
+        
+        input, button { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; }
+        button { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { opacity: 0.8; }
+        
+        .league { background: #34495e; color: white; padding: 3px 6px; border-radius: 4px; font-size: 0.6em; vertical-align: middle; }
+        
+        .tag-list { list-style: none; padding: 0; margin-top: 15px; }
+        .tag-list li { background: #f8f9fa; padding: 8px; margin-bottom: 5px; border-radius: 6px; font-size: 0.85em; border-left: 3px solid #3498db; display: flex; justify-content: space-between; align-items: center; }
+        .delete-member { color: #e74c3c; cursor: pointer; font-weight: bold; padding: 0 5px; }
+        
+        .add-member-form { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
+        
+        
+        .button-group { display: flex; gap: 10px; margin-top: 5px; }
+        .button-group button { flex: 1; }
+        .btn-delete-team { background: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div class="admin-panel">
+    <h2>🆕 Új Csapat Hozzáadása</h2>
+    <form id="teamForm">
+        <input type="text" id="teamName" placeholder="Csapat neve" required>
+        <input type="text" id="teamCity" placeholder="Város" required>
+        <input type="text" id="teamLeague" placeholder="Bajnokság (pl. NB1)" required>
+        <button type="submit">Csapat Mentése</button>
+    </form>
+</div>
+
+<div id="teams-container" class="container">Betöltés...</div>
+
+<script>
+    
+    async function loadTeams() {
+        try {
+            const res = await fetch('/api/teams');
+            const result = await res.json();
+            const container = document.getElementById('teams-container');
+            container.innerHTML = '';
+
+            result.data.forEach(team => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h2>${team.name} <span class="league">${team.league}</span></h2>
+                    <p>📍 ${team.city}</p>
+                    
+                    <strong>Tagok:</strong>
+                    <ul class="tag-list">
+                        ${team.members && team.members.length > 0 
+                            ? team.members.map(m => `
+                                <li>
+                                    <span><strong>${m.fullName}</strong> - ${m.position}</span>
+                                    <span class="delete-member" onclick="deleteMember(${m.id})" title="Tag törlése">✕</span>
+                                </li>`).join('') 
+                            : '<li>Nincs még tag</li>'}
+                    </ul>
+
+                    <div class="add-member-form">
+                        <small>Új tag:</small>
+                        <input type="text" id="name-${team.id}" placeholder="Név">
+                        <input type="text" id="pos-${team.id}" placeholder="Poszt">
+                        <div class="button-group">
+                            <button onclick="addMember(${team.id})">Hozzáadás</button>
+                            <button class="btn-delete-team" onclick="deleteTeam(${team.id})">Csapat törlése</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            console.error("Hiba a betöltéskor:", err);
+            document.getElementById('teams-container').innerText = "Hiba történt a betöltés során. Fut a szerver?";
+        }
+    }
+
+
+    document.getElementById('teamForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('teamName').value,
+            city: document.getElementById('teamCity').value,
+            league: document.getElementById('teamLeague').value
+        };
+
+        await fetch('/api/teams', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        document.getElementById('teamForm').reset();
+        loadTeams();
+    };
+
+    
+    async function addMember(teamId) {
+        const fullName = document.getElementById(`name-${teamId}`).value;
+        const position = document.getElementById(`pos-${teamId}`).value;
+
+        if(!fullName || !position) return alert("Név és poszt kötelező!");
+
+        await fetch('/api/members', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullName, position, teamId })
+        });
+        loadTeams();
+    }
+
+    
+    async function deleteTeam(id) {
+        if (!confirm("Biztosan törlöd a csapatot és az összes tagját?")) return;
+        await fetch(`/api/teams/${id}`, { method: 'DELETE' });
+        loadTeams();
+    }
+
+    
+    async function deleteMember(id) {
+        if (!confirm("Törlöd ezt a tagot?")) return;
+        await fetch(`/api/members/${id}`, { method: 'DELETE' });
+        loadTeams();
+    }
+
+    loadTeams();
+</script>
+</body>
+</html>
