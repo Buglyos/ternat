@@ -19,6 +19,6 @@ router.get('/', MembersController.index);
 router.get('/:id', MembersController.show);       
 router.post('/', MembersController.create);       
 router.put('/:id', MembersController.update);     
-router.delete('/:id', MembersController.destroy); // Törlés
+router.delete('/:id', MembersController.destroy); 
 
 export default router;

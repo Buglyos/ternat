@@ -17,7 +17,7 @@ import UserController from '../controllers/userController.js'
 import verifyToken from '../middleware/authjwt.js'
 
 import TeamController from '../controllers/teamsController.js'
-import MemberController from '../controllers/membersController.js'
+import MemberController from '../controllers/MembersController.js'
 
 
 router.post('/register', AuthController.register)
