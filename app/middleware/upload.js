@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 
 export const upload = multer({
     storage: storage,
-    limits: { fileSize: 1024 * 1024 * 5 }, // 5MB
+    limits: { fileSize: 1024 * 1024 * 5 }, 
     fileFilter: function (req, file, cb) {
         const ext = path.extname(file.originalname);
         if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
