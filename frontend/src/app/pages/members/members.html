@@ -1,0 +1,22 @@
+<h1>Tagok listája</h1>
+
+<table class="members-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Csapat ID</th>
+      <th>Teljes név</th>
+      <th>Poszt</th>
+      <th>Létrehozva</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let member of members">
+      <td>{{ member.id }}</td>
+      <td>{{ member.teamId }}</td>
+      <td>{{ member.fullName }}</td>
+      <td>{{ member.position }}</td>
+      <td>{{ member.createdAt | date:'yyyy-MM-dd' }}</td>
+    </tr>
+  </tbody>
+</table>

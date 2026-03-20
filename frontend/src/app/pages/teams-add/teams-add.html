@@ -1,0 +1,17 @@
+<h1>Új csapat létrehozása</h1>
+
+<div class="form-container">
+
+  <label>Név:</label>
+  <input type="text" [(ngModel)]="team.name" />
+
+  <label>Város:</label>
+  <input type="text" [(ngModel)]="team.city" />
+
+  <label>Liga:</label>
+  <input type="text" [(ngModel)]="team.league" />
+
+  <button class="save-btn" (click)="createTeam()">Mentés</button>
+  <button class="back-btn" routerLink="/teams">Vissza</button>
+
+</div>

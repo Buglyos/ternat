@@ -1,0 +1,28 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  gap: 10px;
+}
+
+input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.save-btn {
+  background-color: #2196f3;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.back-btn {
+  background-color: #888;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}

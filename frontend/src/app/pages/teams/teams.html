@@ -1,0 +1,52 @@
+<h1 class="title">Csapatok</h1>
+
+<!-- Létrehozás (Create) gomb -->
+<button class="add-btn" (click)="openAddTeam()">Új csapat létrehozása</button>
+
+<!-- Kereső mező -->
+<input 
+  type="text" 
+  placeholder="Keresés név vagy város alapján..." 
+  class="search-input"
+  [(ngModel)]="searchText"
+/>
+
+<div class="table-container">
+  <table class="teams-table">
+    <thead>
+      <tr>
+        <th (click)="sortBy('id')">ID</th>
+        <th (click)="sortBy('name')">Név</th>
+        <th (click)="sortBy('city')">Város</th>
+        <th (click)="sortBy('league')">Liga</th>
+        <th>Tagok száma</th>
+        <th>Műveletek</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let team of filteredTeams()">
+        <td>{{ team.id }}</td>
+        <td>{{ team.name }}</td>
+        <td>{{ team.city }}</td>
+        <td>{{ team.league }}</td>
+
+        <!-- ⭐ A TAGOK SZÁMA ITT SZÁMOLÓDIK -->
+        <td>{{ team.members?.length || 0 }}</td>
+
+        <td class="actions">
+
+          <!-- Olvasás (Read) gomb -->
+          <button class="read-btn" (click)="openViewTeam(team.id)">Megtekintés</button>
+
+          <!-- Módosítás (Update) gomb -->
+          <button class="edit-btn" (click)="openEditTeam(team.id)">Módosítás</button>
+
+          <!-- Törlés (Delete) gomb -->
+          <button class="delete-btn" (click)="deleteTeam(team.id)">Törlés</button>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

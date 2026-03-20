@@ -1,0 +1,14 @@
+<h1>Új tag hozzáadása</h1>
+
+<div class="form">
+  <label>Teljes név:</label>
+  <input [(ngModel)]="fullName" placeholder="Játékos neve">
+
+  <label>Poszt:</label>
+  <input [(ngModel)]="position" placeholder="Csatár, kapus...">
+
+  <label>Csapat ID:</label>
+  <input type="number" [(ngModel)]="teamId" placeholder="1">
+
+  <button (click)="save()">Mentés</button>
+</div>
