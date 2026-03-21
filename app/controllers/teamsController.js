@@ -8,70 +8,114 @@
 * Licenc: MIT
 */
 
+import Sequelize from 'sequelize';
+import Team from '../models/team.js';
+import Member from '../models/member.js';
 
-import { Team, Member } from '../models/modrels.js';
-export const index = async (req, res) => {
+
+const index = async (req, res) => {
     try {
         const teams = await Team.findAll({
-            include: [{
-                model: Member,
-                as: 'members'
-            }]
+            attributes: [
+                'id',
+                'name',
+                'city',
+                'league',
+                [Sequelize.fn('COUNT', Sequelize.col('members.id')), 'memberCount']
+            ],
+            include: [
+                {
+                    model: Member,
+                    as: 'members',   
+                    attributes: []
+                }
+            ],
+            group: ['Team.id', 'Team.name', 'Team.city', 'Team.league']
         });
-        res.status(200).json({ success: true, data: teams });
+
+        res.json(teams);
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
 
-export const show = async (req, res) => {
+const show = async (req, res) => {
     try {
         const team = await Team.findByPk(req.params.id, {
-            include: [{
+            include: {
                 model: Member,
-                as: 'members'
-            }]
+                as: 'members'   
+            }
         });
-        if (!team) return res.status(404).json({ success: false, message: "Nincs ilyen csapat" });
-        res.status(200).json({ success: true, data: team });
+
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
+
+        res.json(team);
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
 
-export const store = async (req, res) => {
+const store = async (req, res) => {
     try {
-        const team = await Team.create(req.body);
-        res.status(201).json({ success: true, data: team });
+        const { name, city, league, members } = req.body;
+
+        const team = await Team.create({ name, city, league });
+
+        if (members && members.length > 0) {
+            for (const m of members) {
+                await Member.create({
+                    teamId: team.id,
+                    fullName: m.fullName,
+                    position: m.position
+                });
+            }
+        }
+
+        res.status(201).json(team);
+
     } catch (error) {
-        res.status(400).json({ success: false, error: error.message });
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
 };
 
 
-export const update = async (req, res) => {
+const update = async (req, res) => {
     try {
         const team = await Team.findByPk(req.params.id);
-        if (!team) return res.status(404).json({ success: false, message: "Nincs ilyen csapat" });
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
         await team.update(req.body);
-        res.status(200).json({ success: true, data: team });
+        res.json(team);
     } catch (error) {
-        res.status(400).json({ success: false, error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
 
-export const destroy = async (req, res) => {
+const destroy = async (req, res) => {
     try {
         const team = await Team.findByPk(req.params.id);
-        if (!team) return res.status(404).json({ success: false, message: "Nincs ilyen csapat" });
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
         await team.destroy();
-        res.status(200).json({ success: true, message: "Sikeres törlés" });
+        res.json({ message: 'Team deleted successfully' });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
-export default { index, show, store, update, destroy };
+export default {
+    index,
+    show,
+    store,
+    update,
+    destroy
+};

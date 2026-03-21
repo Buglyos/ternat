@@ -27,17 +27,18 @@ export class TeamsComponent implements OnInit {
     this.loadTeams();
   }
 
-  // 🔵 Csapatok betöltése
+  
   loadTeams(): void {
     this.teamsService.getTeams().subscribe({
       next: (response) => {
-        this.teams = response.data;
+        
+        this.teams = response;
       },
       error: (err) => console.error('Hiba a csapatok betöltésekor:', err)
     });
   }
 
-  // 🔵 Keresés
+  
   filteredTeams() {
     return this.teams.filter(team =>
       team.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
@@ -45,7 +46,7 @@ export class TeamsComponent implements OnInit {
     );
   }
 
-  // 🔵 Rendezés
+  
   sortBy(column: string) {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -64,22 +65,22 @@ export class TeamsComponent implements OnInit {
     });
   }
 
-  // 🟢 CREATE – Új csapat létrehozása
+  
   openAddTeam() {
     this.router.navigate(['/teams/add']);
   }
 
-  // 🔵 READ – Csapat megtekintése
+  
   openViewTeam(id: number) {
     this.router.navigate(['/teams/view', id]);
   }
 
-  // 🟡 UPDATE – Csapat módosítása
+  
   openEditTeam(id: number) {
     this.router.navigate(['/teams/edit', id]);
   }
 
-  // 🔴 DELETE – Csapat törlése
+  
   deleteTeam(id: number) {
     console.log('Törlés hívva, id = ', id);
 

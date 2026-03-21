@@ -11,7 +11,27 @@
   <label>Liga:</label>
   <input type="text" [(ngModel)]="team.league" />
 
+  <hr>
+
+  <h3>Tagok</h3>
+
+  <button class="add-btn" (click)="addMember()">+ Tag hozzáadása</button>
+
+  <div *ngFor="let member of team.members; let i = index" class="member-box">
+
+    <label>Teljes név:</label>
+    <input type="text" [(ngModel)]="member.fullName" />
+
+    <label>Poszt:</label>
+    <input type="text" [(ngModel)]="member.position" />
+
+    <button class="delete-btn" (click)="removeMember(i)">Tag törlése</button>
+
+  </div>
+
+  <hr>
+
   <button class="save-btn" (click)="createTeam()">Mentés</button>
-  <button class="back-btn" routerLink="/teams">Vissza</button>
+  <button class="back-btn" (click)="goBack()">Vissza</button>
 
 </div>
